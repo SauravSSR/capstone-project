@@ -5,7 +5,7 @@
       community.aws.ec2_instance:
         aws_access_key: ASIATSVOPX3DJNEQD56K
         aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
-        profile: "{{ aws_boto_profile }}"
+ #      profile: "{{ aws_boto_profile }}"
         key_name: Demokey.pem
         security_group: "{{ aws_security_group }}"
         instance_type: t2.micro
@@ -20,7 +20,7 @@
         vpc_subnet_id: "{{ vpc_subnet_list | random }}"
         network:
           assign_public_ip: yes
-#      loop: "{{ lookup('dict', ec2_new_list, wantlist=True) }}"
+#     loop: "{{ lookup('dict', ec2_new_list, wantlist=True) }}"
 
     - name: Create Security group
       amazon.aws.ec2_group:
