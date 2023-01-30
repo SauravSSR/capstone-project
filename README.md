@@ -1,9 +1,5 @@
-PROJECT
-
-Infra Optimization
-
-
-Description 
+<h1>Infra Optimization</h1>
+<h2> Description: </h2>
 
 Create a DevOps infrastructure for an e-commerce application to run on high-availability mode.
 Background of the problem statement:
@@ -12,7 +8,7 @@ the connectivity of the database has been the reason for the issue.
 While troubleshooting, it is found that the database server has several downtime instances at irregular intervals. This situation compels the company to create their own infrastructure that runs in high-availability mode.
 Given that online shopping experiences continue to evolve as per customer expectations, the developers are driven to make their app more reliable, fast, and secure for improving the performance of the current system.
 
-Implementation requirements:
+<h2> Implementation requirements: </h2>
     1. Create the cluster (EC2 instances with load balancer and elastic IP in case of AWS) 
     2. Automate the provisioning of an EC2 instance using Ansible or Chef Puppet 
     3. Install Docker and Kubernetes on the cluster 
@@ -21,8 +17,8 @@ Implementation requirements:
     6. Configure application on the pod 
     7. Take snapshot of ETCD database 
     8. Set criteria such that if the memory of CPU goes beyond 50%, environments automatically get scaled up and configured 
-
-Tools Used:
+    
+<h2> Tools Used: </h2>
     1. EC2 
     2. Kubernetes 
     3. Docker 
