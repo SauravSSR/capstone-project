@@ -1,4 +1,5 @@
-- host: localhost
+---
+- hosts: localhost
   become: true
   tasks:
     - name: Launching EC2 instances
