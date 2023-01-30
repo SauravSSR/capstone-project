@@ -6,7 +6,7 @@
         aws_access_key: ASIATSVOPX3DJNEQD56K
         aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
         key_name: Demokey.pem
-        security_group: "{{ aws_security_group }}"
+        security_group: sg-04deb17b179d0b2b0
         instance_type: t2.micro
         image_id: ami-00874d747dde814fa
         state: present
@@ -22,7 +22,7 @@
 
     - name: Create Security group
       amazon.aws.ec2_group:
-        name: sg
+        name: sg-04deb17b179d0b2b0
         description: 'Security Group with SSH and HTTP rules'
         vpc_id: vpc-0efa6947caf6fb2a7
         region: us-east-1
