@@ -1,0 +1,185 @@
+Installation or pre-requisites
+
+1. Ansible Setup:
+
+$ sudo apt-get install -y software-properties-common
+$ sudo apt-add-repository ppa:ansible/ansible
+$ sudo apt-get update
+$ sudo apt-get install -y ansible
+
+Verify the installation of Ansible:
+
+$ ansible –version
+
+
+2. Docker Setup:
+
+A) Set up the repository
+B) Update the apt package index and install packages :
+$  sudo apt-get update
+$  sudo apt-get install \
+ca-certificates \
+curl \
+gnupg \
+lsb-release
+C) Add Docker’s official GPG key:
+$ sudo mkdir -p /etc/apt/keyrings
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+D) Use the following command to set up the repository:
+$ echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+E) Update the apt package index:
+ $ sudo apt-get update
+F) Install Docker Engine, containerd, and Docker Compose. 
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+Verify that the Docker Engine installation is successful by running the hello-world image:
+ sudo docker run hello-world
+
+Verify the installation of Docker:
+
+    $ docker --version
+    $ docker version
+    $ docker -v 
+
+3. Git Setup:
+
+   $ sudo apt update
+   $ sudo apt install git
+
+Verify the installation of Git:
+
+   $ git –version
+
+4. Kubernetes Setup :
+
+A) Update the apt package index and install packages needed to use the Kubernetes apt repository 
+
+$ sudo apt-get update
+$ sudo apt-get install -y apt-transport-https ca-certificates curl
+
+B) Download the Google Cloud public signing key: 
+
+$ sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+C) Add the Kubernetes apt repository: 
+
+$ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+D)Update apt package index, install kubelet, kubeadm and kubectl, and pin their version 
+
+$ sudo apt-get update
+$ sudo apt-get install -y kubelet kubeadm kubectl
+$ sudo apt-mark hold kubelet kubeadm kubectl
+
+
+Verify the installation of Kubernetes :
+
+$ kubeadm version
+
+
+5. Java & Maven Setup:
+
+Go to https://www.digitalocean.com/community/tutorials/install-maven-linux-ubuntu and follow the steps given to install Java & Maven.
+
+Verify the installation of Java & Maven:
+
+   $ java -version
+   $ mvn -version
+
+6. ETCD –- Backup Setup:
+
+A) Get URLs and keys
+
+$ kubectl describe pod etcd-master -n kube-system
+Get client-URL, cert, key, and trusted-ca location
+
+B) Command
+$ sudo snap install etcd
+$ sudo apt install etcd-client
+$ sudo chmod a+rw -R /etc/kubernetes/pki
+
+
+GitHub Repository:
+
+https://github.com/SauravSSR/capstone-project.git
+
+
+Steps to be followed
+
+1. Clone the github repository created
+
+$ git clone https://github.com/SauravSSR/capstone-project.git
+
+2. Go to the project folder 
+
+$ cd capstone-project
+ 
+
+3.  Generate Keypair using 
+
+$ ssh-keygen -f mykey-pair 
+
+4. Deploy the ansible playbook & the instance will be created
+
+$ ansible-playbook ec2.yaml
+
+Generate Keypair using → $ ssh-keygen -f mykey-pair
+
+5. Got to AWS and connect to the instance
+
+6. Clone the github repository created inside the instances
+
+$ git clone https://github.com/SauravSSR/capstone-project.git
+
+7. Create a namespace named app01 , role named developer & user named swami permissions to create, list, get, update, and delete pods
+
+$ kubectl create ns app01
+$ kubectl create role developer --verb=get --verb=list --resource=pods -n app01
+$ kubectl create rolebinding developer-binding-swami --role=developer --user=swami -n app01
+
+8. Configure application on the pod following the below steps
+
+A) Clone Spring based web application
+  $ git clone https://github.com/spring-guides/gs-spring-boot-docker.git
+B) Change directory
+  $ cd gs-spring-boot-docker/complete
+C) Create/Edit a Docker file
+  $ vi Dockerfile
+    FROM openjdk:8-jdk-alpine
+    COPY target/spring-boot-docker-complete-0.0.1-SNAPSHOT.jar app.jar
+    ENTRYPOINT ["java","-jar","/app.jar"]
+D) Build jar
+  $ ./mvnw package
+E) Run application
+  $ java -jar target/spring-boot-docker-complete-0.0.1-SNAPSHOT.jar
+F) Build docker image
+  $ docker build -t springio/gs-spring-boot-docker
+G) Run docker image
+  $ docker run -p 8080:8080 springio/gs-spring-boot-docker
+
+9. Implementing the network policies at the database pod to allow ingress traffic from the front-end application pod by creating the ingress-deployment.yaml.
+
+$ kubectl apply -f ingress-deployment.yaml
+$ kubectl expose deployment cart --name cart --port 80
+$ kubectl expose deployment orders --name orders --port 80 --target-port 8080
+$ kubectl expose deployment accounts --name accounts --port 8
+
+10. Take a snapshot of of ETCD database.
+$ sudo ETCDCTL_API=3 etcdctl snapshot save etcd_backup.db \
+--endpoints https://<cluster-ip>:2379 \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt
+
+   Verify the  snapshot
+$ sudo ETCDCTL_API=3 etcdctl --write-out=table snapshot status etcd_backup.db \
+--endpoints https://<cluster-ip>:2379 \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt
+
+11. Setting a criteria such that if the memory of CPU goes beyond 50%, environments automatically get scaled up and configured 
+
+$ kubectl autoscale deploy deployment --min=3 --max=5 --cpu-percent=50
