@@ -9,6 +9,11 @@
       instance_tags:
         name: "Ansible-LB"
       group_id: sg-04deb17b179d0b2b0
+      assign_public_ip: yes
+      aws_access_key: ASIATSVOPX3DJNEQD56K
+      aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
+      aws_token: FwoGZXIvYXdzECMaDChM6E8bY59MYXPPzCK7AXAuA4t65HUqUolziLwTeWG9zCDVpIVJnlVlqY9QxNhI3fu7JNcKpZ8XyvONAtYZUpkMffxNTLotCJze5rrf7qQqfZjKkF9ePfV7txiVYZmUTtDOYmZtn0k/ui+j9zziOOG7nkvgWOM0ZJKMdBqER1dcZXMPnxFL4HFvQ5s15+ttoUKYoyw1XDIubIclDiWM0Qgr9M1tvQonsvmvGQDj9Smvy/45KmWPx5t82iGVLrD88zwiFZI5ezuh50goxJvengYyLVPWVICrkkKyK+z82ESrYZ3mi639SEjOk0Vr1ahayT8Nn6L6gsgVmhwFOS7Nag==
+
   - ec2:
       key_name: Demokey
       instance_type: t2.micro
@@ -18,3 +23,7 @@
       instance_tags:
         name: "Ansible-web"
       group_id: sg-04deb17b179d0b2b0
+      assign_public_ip: yes
+      aws_access_key: ASIATSVOPX3DJNEQD56K
+      aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
+      aws_token: FwoGZXIvYXdzECMaDChM6E8bY59MYXPPzCK7AXAuA4t65HUqUolziLwTeWG9zCDVpIVJnlVlqY9QxNhI3fu7JNcKpZ8XyvONAtYZUpkMffxNTLotCJze5rrf7qQqfZjKkF9ePfV7txiVYZmUTtDOYmZtn0k/ui+j9zziOOG7nkvgWOM0ZJKMdBqER1dcZXMPnxFL4HFvQ5s15+ttoUKYoyw1XDIubIclDiWM0Qgr9M1tvQonsvmvGQDj9Smvy/45KmWPx5t82iGVLrD88zwiFZI5ezuh50goxJvengYyLVPWVICrkkKyK+z82ESrYZ3mi639SEjOk0Vr1ahayT8Nn6L6gsgVmhwFOS7Nag==
