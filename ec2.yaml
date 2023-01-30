@@ -1,29 +1,65 @@
-- hosts: localhost
-  tasks:
-  - ec2:
-      key_name: Demokey
-      instance_type: t2.micro
-      image: ami-00874d747dde814fa
-      region: us-east-1
-      count: 1
-      instance_tags:
-        name: "Ansible-LB"
-      group_id: sg-04deb17b179d0b2b0
+- name: Launching EC2 instances
+  community.aws.ec2_instance:
+    #aws_access_key: "{{ec2_access_key}}"
+    #aws_secret_key: "{{ec2_secret_key}}"
+    profile: "{{ aws_boto_profile }}"
+    key_name: "{{ aws_demo_key }}"
+    security_group: "{{ aws_security_group }}"
+    instance_type: "{{ item.value.instance_type }}"
+    image_id: "{{ aws_ami_id }}" 
+    state: present
+    wait: yes
+    wait_timeout: 300
+    region: "{{ aws_region }}"
+    tags:
+       Name: "{{ item.value.name }}"
+    detailed_monitoring: no
+    vpc_subnet_id: "{{ vpc_subnet_list | random }}"
+    network:
       assign_public_ip: yes
-      aws_access_key: ASIATSVOPX3DJNEQD56K
-      aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
-      aws_token: FwoGZXIvYXdzECMaDChM6E8bY59MYXPPzCK7AXAuA4t65HUqUolziLwTeWG9zCDVpIVJnlVlqY9QxNhI3fu7JNcKpZ8XyvONAtYZUpkMffxNTLotCJze5rrf7qQqfZjKkF9ePfV7txiVYZmUTtDOYmZtn0k/ui+j9zziOOG7nkvgWOM0ZJKMdBqER1dcZXMPnxFL4HFvQ5s15+ttoUKYoyw1XDIubIclDiWM0Qgr9M1tvQonsvmvGQDj9Smvy/45KmWPx5t82iGVLrD88zwiFZI5ezuh50goxJvengYyLVPWVICrkkKyK+z82ESrYZ3mi639SEjOk0Vr1ahayT8Nn6L6gsgVmhwFOS7Nag==
+  loop: "{{ lookup('dict', ec2_new_list, wantlist=True) }}"
 
-  - ec2:
-      key_name: Demokey
-      instance_type: t2.micro
-      image: ami-00874d747dde814fa
-      region: us-east-1
-      count: 4
-      instance_tags:
-        name: "Ansible-web"
-      group_id: sg-04deb17b179d0b2b0
-      assign_public_ip: yes
-      aws_access_key: ASIATSVOPX3DJNEQD56K
-      aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
-      aws_token: FwoGZXIvYXdzECMaDChM6E8bY59MYXPPzCK7AXAuA4t65HUqUolziLwTeWG9zCDVpIVJnlVlqY9QxNhI3fu7JNcKpZ8XyvONAtYZUpkMffxNTLotCJze5rrf7qQqfZjKkF9ePfV7txiVYZmUTtDOYmZtn0k/ui+j9zziOOG7nkvgWOM0ZJKMdBqER1dcZXMPnxFL4HFvQ5s15+ttoUKYoyw1XDIubIclDiWM0Qgr9M1tvQonsvmvGQDj9Smvy/45KmWPx5t82iGVLrD88zwiFZI5ezuh50goxJvengYyLVPWVICrkkKyK+z82ESrYZ3mi639SEjOk0Vr1ahayT8Nn6L6gsgVmhwFOS7Nag==
+- name: Create Security group
+  amazon.aws.ec2_group:
+    profile: "{{ aws_boto_profile }}"
+    name: "{{ aws_security_group }}"
+    description: 'Security Group with SSH and HTTP rules'
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        ports:
+        - 80
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 80
+      - proto: tcp
+        ports:
+        - 22
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow all on port 22 
+
+# create elb
+- name: Create Amazon ELB
+  amazon.aws.ec2_elb_lb:
+    profile: "{{ aws_boto_profile }}"
+    name: "{{ aws_elb_app_lb }}"
+    region: "{{ aws_region }}"
+    zones:
+      - "{{ ap_zone1 }}"
+      - "{{ ap_zone2 }}"
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80
+        proxy_protocol: True
+    state: present
+  register: elbcreated
+
+- name: Deploy Webserver to EC2 instances
+  hosts: "{{ inventory_webgroup }}"
+  remote_user: ec2-user
+  become: true
+  tasks:
+    - name: Deploy Web service
+      include_role: 
+        name: deploy-web-server
