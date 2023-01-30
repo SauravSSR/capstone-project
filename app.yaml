@@ -1,9 +1,22 @@
 ---
-- name: Deploy Webserver to EC2 instances
-  hosts: "{{ inventory_webgroup }}"
-  remote_user: ec2-user
-  become: true
-  tasks:
-    - name: Deploy Web service
-      include_role: 
-        name: deploy-web-server
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: foo-allow-to-hello
+spec:
+  policyTypes:
+  - Egress
+  podSelector:
+    matchLabels:
+      app: foo
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: hello
+  - ports:
+    - port: 53
+      protocol: TCP
+    - port: 53
+      protocol: UDP
+---
