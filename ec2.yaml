@@ -1,7 +1,7 @@
 - hosts: localhost
   become: true
   tasks:
-    - name: Launching EC2 instances
+    - name: Launching EC2
       community.aws.ec2_instance:
         aws_access_key: ASIATSVOPX3DJNEQD56K
         aws_secret_key: Q4Q3oAO5FUopBx3OwQX/EhPMY97oyHR+rY4Zr3lx
@@ -15,7 +15,7 @@
         wait_timeout: 300
         region: us-east-1
         tags:
-           Name: "{{ item.value.name }}"
+          Name: "{{ item.value.name }}"
         detailed_monitoring: no
         vpc_subnet_id: "{{ vpc_subnet_list | random }}"
         network:
